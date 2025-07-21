@@ -71,12 +71,11 @@ function NewFactForm({ setFacts, setShowForm }) {
         disabled={isUploading}
       />
 
-      {/* Category selection */}
       <select
         value={category}
         onChange={(e) => {
           setCategory(e.target.value);
-          setSubcategory(""); // reset subcategory
+          setSubcategory(""); 
         }}
         disabled={isUploading}
       >
