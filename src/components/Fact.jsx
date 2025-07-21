@@ -4,6 +4,7 @@ import { CATEGORIES } from "../App.js";
 
 function Fact({ fact, setFacts }) {
   const [isUpdating, setIsUpdating] = useState(false);
+
   const isDisputed =
     fact.votesInteresting + fact.votesMindblowing < fact.votesFalse;
 
@@ -25,10 +26,12 @@ function Fact({ fact, setFacts }) {
       );
   }
 
+  const categoryObj = CATEGORIES.find((cat) => cat.name === fact.category);
+
   return (
     <li className="fact">
       <p>
-        {isDisputed ? <span className="disputed">[⛔️ DISPUTED]</span> : null}
+        {isDisputed && <span className="disputed">[⛔️ DISPUTED]</span>}
         {fact.text}
         <a
           className="source"
@@ -39,21 +42,32 @@ function Fact({ fact, setFacts }) {
           (source)
         </a>
       </p>
+
       <span
         className="tag"
-        style={{
-          backgroundColor: CATEGORIES.find((cat) => cat.name === fact.category)
-            .color,
-        }}
+        style={{ backgroundColor: categoryObj?.color || "#aaa" }}
       >
         {fact.category}
       </span>
+
+      {fact.subcategory && (
+        <span
+          className="tag subcategory"
+          style={{
+            backgroundColor: "#9ca3af",
+            marginLeft: "8px",
+          }}
+        >
+          {fact.subcategory}
+        </span>
+      )}
+
       <div className="vote-buttons">
         <button
           onClick={() => handleVote("votesInteresting")}
           disabled={isUpdating}
         >
-          👍{fact.votesInteresting}
+          👍 {fact.votesInteresting}
         </button>
         <button
           onClick={() => handleVote("votesMindblowing")}

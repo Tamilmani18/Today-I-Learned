@@ -214,6 +214,13 @@ ul {
   background-color: #292524;
 }
 
+.tag.subcategory {
+  background-color: #9ca3af;
+  font-size: 13px;
+  padding: 2px 10px;
+  margin-left: 8px;
+}
+
 .fact-form {
   background-color: #44403c;
   margin-bottom: 40px;

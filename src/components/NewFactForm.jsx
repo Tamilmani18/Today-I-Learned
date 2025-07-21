@@ -18,37 +18,55 @@ function NewFactForm({ setFacts, setShowForm }) {
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const textLength = text.length;
+  const [error, setError] = useState("");
 
+  const textLength = text.length;
   const selectedCategoryObj = CATEGORIES.find((cat) => cat.name === category);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (
-      text &&
-      isValidHttpUrl(source) &&
-      category &&
-      subcategory &&
-      textLength <= 200
-    ) {
-      setIsUploading(true);
+    // Validation
+    if (!text || textLength > 200) {
+      setError("Please enter a fact (max 200 characters).");
+      return;
+    }
 
-      const { data: newFact, error } = await supabase
-        .from("facts")
-        .insert([{ text, source, category, subcategory }])
-        .select();
+    if (!isValidHttpUrl(source)) {
+      setError("Please provide a valid source URL.");
+      return;
+    }
 
-      setIsUploading(false);
+    if (!category) {
+      setError("Please choose a category.");
+      return;
+    }
 
-      if (!error) setFacts((facts) => [newFact[0], ...facts]);
-      else alert("Error creating fact");
+    if (selectedCategoryObj?.subcategories?.length > 0 && !subcategory) {
+      setError("Please choose a subcategory.");
+      return;
+    }
 
+    // Clear error and proceed
+    setError("");
+    setIsUploading(true);
+
+    const { data: newFact, error } = await supabase
+      .from("facts")
+      .insert([{ text, source, category, subcategory }])
+      .select();
+
+    setIsUploading(false);
+
+    if (!error) {
+      setFacts((facts) => [newFact[0], ...facts]);
       setText("");
       setSource("");
       setCategory("");
       setSubcategory("");
       setShowForm(false);
+    } else {
+      setError("Something went wrong while posting your fact.");
     }
   }
 
@@ -75,7 +93,7 @@ function NewFactForm({ setFacts, setShowForm }) {
         value={category}
         onChange={(e) => {
           setCategory(e.target.value);
-          setSubcategory(""); 
+          setSubcategory("");
         }}
         disabled={isUploading}
       >
@@ -101,6 +119,9 @@ function NewFactForm({ setFacts, setShowForm }) {
           ))}
         </select>
       )}
+
+      {/* ✅ Error message */}
+      {error && <p style={{ color: "#ef4444", fontWeight: "bold" }}>{error}</p>}
 
       <button className="btn btn-large" disabled={isUploading}>
         Post
